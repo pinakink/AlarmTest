@@ -1,19 +1,43 @@
 package com.example.alarmtest.alarm;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import java.util.Calendar;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener{
+
+    private Button startAlarm,stopAlarm;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initialise();
     }
 
+
+    private void initialise(){
+
+        startAlarm=(Button)findViewById(R.id.startAlarm);
+        startAlarm.setOnClickListener(this);
+
+        stopAlarm=(Button)findViewById(R.id.stopAlarm);
+        stopAlarm.setOnClickListener(this);
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -35,4 +59,46 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onClick(View view) {
+
+
+        switch (view.getId()){
+
+            case R.id.startAlarm:
+
+                setAlarm();
+                break;
+
+            case R.id.stopAlarm:
+
+                stopAlarm();
+                break;
+        }
+    }
+
+
+
+    private void setAlarm(){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 17);
+
+        alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, alarmIntent);
+    }
+
+
+    private void stopAlarm(){
+
+        if(alarmMgr!=null){
+
+            alarmMgr.cancel(alarmIntent);
+        }
+    }
 }
