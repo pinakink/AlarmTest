@@ -30,6 +30,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
     private void initialise(){
+        alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
         startAlarm=(Button)findViewById(R.id.startAlarm);
         startAlarm.setOnClickListener(this);
@@ -67,7 +68,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             case R.id.startAlarm:
 
-                setAlarm();
+
+                    setAlarm();
+
+
                 break;
 
             case R.id.stopAlarm:
@@ -84,12 +88,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.MINUTE,00);
 
-        alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, alarmIntent);
     }
 
